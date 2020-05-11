@@ -11,6 +11,7 @@ const Nav = (props) => {
   const [userState, setUserState] = useState(null);
   const dispatch = useDispatch();
   const logoutUserAction = () => dispatch(logoutUser());
+
   useEffect(() => {
     firebase.getUserState().then((user) => {
       setUserState(user);

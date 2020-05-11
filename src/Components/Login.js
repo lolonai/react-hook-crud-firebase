@@ -25,7 +25,7 @@ const Login = () => {
   };
 
   const redirectTo = redirect;
-  if (redirect) {
+  if (redirectTo) {
     return <Redirect to="/" />;
   }
 
