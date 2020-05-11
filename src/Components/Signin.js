@@ -14,14 +14,15 @@ const Signin = () => {
   const signin = async (e) => {
     e.preventDefault();
     if (email !== "" && password !== "") {
-      let user = await createUserAction(email, password);
+      await createUserAction(email, password);
+      setRedirect(true);
     } else {
       console.log("need to fill the credentials");
     }
   };
 
   const redirectTo = routeRedirect;
-  if (routeRedirect) {
+  if (redirectTo) {
     return <Redirect to="/" />;
   }
 

@@ -3,15 +3,7 @@ import "firebase/auth";
 import "firebase/firestore";
 import "firebase/storage";
 
-const config = {
-  apiKey: "AIzaSyCgkl4GEesaB2Tp_EOMnbSxIlOO45IcvF4",
-  authDomain: "reactreduxcrud-6a8bb.firebaseapp.com",
-  databaseURL: "https://reactreduxcrud-6a8bb.firebaseio.com",
-  projectId: "reactreduxcrud-6a8bb",
-  storageBucket: "reactreduxcrud-6a8bb.appspot.com",
-  messagingSenderId: "309495951661",
-  appId: "1:309495951661:web:18979aa5eb5ba3d456a3a4",
-};
+const config = process.env.API_KEY_FIREBASE;
 
 class Firebase {
   constructor() {
@@ -19,6 +11,7 @@ class Firebase {
     this.auth = firebase.auth();
     this.db = firebase.firestore();
   }
+
   //sign in
   async signin(email, password) {
     const user = await firebase
@@ -29,6 +22,7 @@ class Firebase {
       });
     return user;
   }
+
   //log in
   async login(email, password) {
     const user = await firebase
@@ -39,6 +33,7 @@ class Firebase {
       });
     return user;
   }
+
   async logout() {
     const logout = await firebase
       .auth()
@@ -48,10 +43,36 @@ class Firebase {
       });
     return logout;
   }
+
   async getUserState() {
     return new Promise((resolve) => {
       this.auth.onAuthStateChanged(resolve);
     });
+  }
+
+  async createPost(post) {
+    const storageRef = firebase.storage().ref();
+    // create a child inside the storage
+    const storageChild = storageRef.child(post.cover.name);
+    const postCover = await storageChild.put(post.cover);
+    const downloadURL = await storageChild.getDownloadURL(); //url
+    const fileRef = postCover.ref.location.path; // actual path
+
+    let newPost = {
+      title: post.title,
+      content: post.content,
+      cover: downloadURL,
+      fileref: fileRef,
+    };
+    const firebasePost = await firebase
+      .firestore()
+      .collection("posts")
+      .add(newPost)
+      .catch((err) => {
+        console.log(err);
+      });
+
+    return firebasePost;
   }
 }
 
